@@ -60,6 +60,29 @@ Suggested action: Add a rollback trigger, named owner, and recovery verification
 	}
 }
 
+func TestUserCanReviewPublicPlanWithAntigravityCLI(t *testing.T) {
+	repositoryRoot := repositoryRoot(t)
+	binaryDirectory := t.TempDir()
+	planlens := buildCommand(t, repositoryRoot, binaryDirectory, "planlens", "./cmd/planlens")
+	buildCommand(t, repositoryRoot, binaryDirectory, "agy", "./internal/adapters/antigravity/testdata/fakeagy")
+
+	want := `PlanLens review result
+Reviewer: antigravity
+CLI version: 1.1.6
+Access capability: constrained
+Status: complete
+
+MAJOR: The rollout has no rollback decision.
+Evidence: The plan deploys to all users and defines no rollback trigger or owner.
+Impact: A failed deployment could remain active without clear responsibility.
+Suggested action: Add a rollback trigger, owner, and recovery verification.
+`
+	got := runReviewWithReviewer(t, repositoryRoot, planlens, "antigravity", binaryDirectory)
+	if got != want {
+		t.Fatalf("unexpected Antigravity review output\nwant:\n%s\ngot:\n%s", want, got)
+	}
+}
+
 func runReview(t *testing.T, repositoryRoot, planlens string) string {
 	return runReviewWithReviewer(t, repositoryRoot, planlens, "simulated", "")
 }
