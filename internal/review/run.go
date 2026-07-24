@@ -18,7 +18,17 @@ const SimulatedReviewerID = "simulated"
 type Result struct {
 	SchemaVersion string    `json:"schema_version"`
 	Findings      []Finding `json:"findings"`
+	Metadata      Metadata  `json:"-"`
 }
+
+type Metadata struct {
+	CLIVersion       string
+	AccessCapability AccessCapability
+}
+
+type AccessCapability string
+
+const AccessConstrained AccessCapability = "constrained"
 
 type Finding struct {
 	Severity        Severity `json:"severity"`
@@ -86,8 +96,12 @@ func (reviewer simulatedReviewer) Run(ctx context.Context, request Request) (Res
 		return Result{}, fmt.Errorf("reviewer process failed: %w", err)
 	}
 
+	return DecodeResult(&stdout)
+}
+
+func DecodeResult(input io.Reader) (Result, error) {
 	var result Result
-	decoder := json.NewDecoder(&stdout)
+	decoder := json.NewDecoder(input)
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&result); err != nil {
 		return Result{}, fmt.Errorf("decode final response: %w", err)

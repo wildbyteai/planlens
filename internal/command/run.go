@@ -8,12 +8,13 @@ import (
 	"os"
 	"strings"
 
+	claudeadapter "github.com/wildbyteai/planlens/internal/adapters/claude"
 	"github.com/wildbyteai/planlens/internal/review"
 )
 
 func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	if len(args) == 0 || args[0] != "review" {
-		fmt.Fprintln(stderr, "usage: planlens review --plan <path> --reviewer simulated")
+		fmt.Fprintln(stderr, "usage: planlens review --plan <path> --reviewer <simulated|claude>")
 		return 2
 	}
 
@@ -28,18 +29,22 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintln(stderr, "plan and reviewer are required")
 		return 2
 	}
-	if *reviewerID != review.SimulatedReviewerID {
-		fmt.Fprintf(stderr, "unsupported reviewer %q\n", *reviewerID)
-		return 2
-	}
-
 	plan, err := os.ReadFile(*planPath)
 	if err != nil {
 		fmt.Fprintf(stderr, "read plan: %v\n", err)
 		return 1
 	}
 
-	reviewer, err := review.NewSimulatedReviewer()
+	var reviewer review.Reviewer
+	switch *reviewerID {
+	case review.SimulatedReviewerID:
+		reviewer, err = review.NewSimulatedReviewer()
+	case claudeadapter.ID:
+		reviewer, err = claudeadapter.New()
+	default:
+		fmt.Fprintf(stderr, "unsupported reviewer %q\n", *reviewerID)
+		return 2
+	}
 	if err != nil {
 		fmt.Fprintf(stderr, "prepare reviewer: %v\n", err)
 		return 1
@@ -52,6 +57,12 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 
 	fmt.Fprintln(stdout, "PlanLens review result")
 	fmt.Fprintf(stdout, "Reviewer: %s\n", reviewer.ID())
+	if result.Metadata.CLIVersion != "" {
+		fmt.Fprintf(stdout, "CLI version: %s\n", result.Metadata.CLIVersion)
+	}
+	if result.Metadata.AccessCapability != "" {
+		fmt.Fprintf(stdout, "Access capability: %s\n", result.Metadata.AccessCapability)
+	}
 	fmt.Fprintln(stdout, "Status: complete")
 	for _, finding := range result.Findings {
 		fmt.Fprintln(stdout)
