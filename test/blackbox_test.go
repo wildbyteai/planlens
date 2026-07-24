@@ -118,6 +118,63 @@ Suggested action: Add a rollback trigger, named owner, and recovery verification
 	}
 }
 
+func TestUserCanReviewPublicPlanWithKimiCodeCLI(t *testing.T) {
+	repositoryRoot := repositoryRoot(t)
+	binaryDirectory := t.TempDir()
+	planlens := buildCommand(t, repositoryRoot, binaryDirectory, "planlens", "./cmd/planlens")
+	buildCommand(t, repositoryRoot, binaryDirectory, "kimi", "./test/fixtures/fakekimi")
+	t.Setenv("KIMI_CODE_HOME", t.TempDir())
+
+	want := `PlanLens review result
+Reviewer: kimi
+CLI version: 0.29.1
+Access capability: constrained
+Status: complete
+
+MAJOR: The rollout has no rollback decision
+Evidence: The plan schedules deployment but defines no rollback trigger or owner.
+Impact: A failed deployment could remain active while responsibility is unclear.
+Suggested action: Add a rollback trigger, named owner, and recovery verification step.
+`
+	got := runReviewWithReviewer(t, repositoryRoot, planlens, "kimi", binaryDirectory)
+	if got != want {
+		t.Fatalf("unexpected Kimi review output\nwant:\n%s\ngot:\n%s", want, got)
+	}
+}
+
+func TestKimiRejectsNonPublicPlanBeforeStartingReview(t *testing.T) {
+	repositoryRoot := repositoryRoot(t)
+	binaryDirectory := t.TempDir()
+	planlens := buildCommand(t, repositoryRoot, binaryDirectory, "planlens", "./cmd/planlens")
+	buildCommand(t, repositoryRoot, binaryDirectory, "kimi", "./test/fixtures/fakekimi")
+	t.Setenv("KIMI_CODE_HOME", t.TempDir())
+
+	planPath := filepath.Join(t.TempDir(), "private-plan.md")
+	if err := os.WriteFile(planPath, []byte("private plan must not enter process arguments\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	command := exec.CommandContext(
+		ctx,
+		planlens,
+		"review",
+		"--plan", planPath,
+		"--reviewer", "kimi",
+	)
+	command.Dir = repositoryRoot
+	command.Env = append(os.Environ(), "PATH="+binaryDirectory)
+	output, err := command.CombinedOutput()
+	if err == nil {
+		t.Fatalf("Kimi review unexpectedly accepted a non-public plan:\n%s", output)
+	}
+	want := "run reviewer: Kimi Code CLI feasibility adapter only accepts the fixed public fixture\n"
+	if string(output) != want {
+		t.Fatalf("unexpected non-public plan error\nwant: %q\ngot:  %q", want, output)
+	}
+}
+
 func runReview(t *testing.T, repositoryRoot, planlens string) string {
 	return runReviewWithReviewer(t, repositoryRoot, planlens, "simulated", "")
 }
