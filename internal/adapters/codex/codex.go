@@ -445,14 +445,19 @@ func isolatedEnvironment(workspace, codexHome string) []string {
 }
 
 func existingCodexHome() string {
-	if home := os.Getenv("CODEX_HOME"); home != "" {
-		return home
+	home := os.Getenv("CODEX_HOME")
+	if home == "" {
+		userHome, err := os.UserHomeDir()
+		if err != nil || userHome == "" {
+			return ""
+		}
+		home = filepath.Join(userHome, ".codex")
 	}
-	home, err := os.UserHomeDir()
-	if err != nil || home == "" {
+	absoluteHome, err := filepath.Abs(home)
+	if err != nil {
 		return ""
 	}
-	return filepath.Join(home, ".codex")
+	return absoluteHome
 }
 
 var sharedEnvironmentKeys = []string{
