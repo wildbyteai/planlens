@@ -83,6 +83,41 @@ Suggested action: Add a rollback trigger, owner, and recovery verification.
 	}
 }
 
+func TestUserCanReviewPublicPlanWithCodexCLI(t *testing.T) {
+	repositoryRoot := repositoryRoot(t)
+	binaryDirectory := t.TempDir()
+	planlens := buildCommand(t, repositoryRoot, binaryDirectory, "planlens", "./cmd/planlens")
+	buildCommand(t, repositoryRoot, binaryDirectory, "codex", "./internal/adapters/codex/testdata/fakecodex")
+
+	home := t.TempDir()
+	if err := os.WriteFile(filepath.Join(home, "fake-codex-authenticated"), []byte("yes"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	finalResponse := `{"schema_version":"1","findings":[{"severity":"major","title":"The rollout has no rollback decision","evidence":"The plan schedules deployment but defines no rollback trigger or owner.","impact":"A failed deployment could remain active while responsibility is unclear.","suggested_action":"Add a rollback trigger, named owner, and recovery verification step."}]}`
+	if err := os.WriteFile(filepath.Join(home, "fake-codex-final.json"), []byte(finalResponse), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("HOME", home)
+	t.Setenv("USERPROFILE", home)
+	t.Setenv("CODEX_HOME", filepath.Join(home, ".codex"))
+
+	want := `PlanLens review result
+Reviewer: codex
+CLI version: 0.146.0-alpha.3.1
+Access capability: constrained
+Status: complete
+
+MAJOR: The rollout has no rollback decision
+Evidence: The plan schedules deployment but defines no rollback trigger or owner.
+Impact: A failed deployment could remain active while responsibility is unclear.
+Suggested action: Add a rollback trigger, named owner, and recovery verification step.
+`
+	got := runReviewWithReviewer(t, repositoryRoot, planlens, "codex", binaryDirectory)
+	if got != want {
+		t.Fatalf("unexpected Codex review output\nwant:\n%s\ngot:\n%s", want, got)
+	}
+}
+
 func runReview(t *testing.T, repositoryRoot, planlens string) string {
 	return runReviewWithReviewer(t, repositoryRoot, planlens, "simulated", "")
 }
