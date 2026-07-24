@@ -8,13 +8,14 @@ import (
 	"os"
 	"strings"
 
+	antigravityadapter "github.com/wildbyteai/planlens/internal/adapters/antigravity"
 	claudeadapter "github.com/wildbyteai/planlens/internal/adapters/claude"
 	"github.com/wildbyteai/planlens/internal/review"
 )
 
 func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	if len(args) == 0 || args[0] != "review" {
-		fmt.Fprintln(stderr, "usage: planlens review --plan <path> --reviewer <simulated|claude>")
+		fmt.Fprintln(stderr, "usage: planlens review --plan <path> --reviewer <simulated|claude|antigravity>")
 		return 2
 	}
 
@@ -41,6 +42,8 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		reviewer, err = review.NewSimulatedReviewer()
 	case claudeadapter.ID:
 		reviewer, err = claudeadapter.New()
+	case antigravityadapter.ReviewerID:
+		reviewer, err = antigravityadapter.Discover(ctx)
 	default:
 		fmt.Fprintf(stderr, "unsupported reviewer %q\n", *reviewerID)
 		return 2
