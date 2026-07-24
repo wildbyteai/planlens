@@ -44,6 +44,51 @@ func TestDiscoverFindsSupportedAuthenticatedCodex(t *testing.T) {
 	}
 }
 
+func TestDiscoverResolvesRelativeCodexHomeBeforeReviewChangesWorkingDirectory(t *testing.T) {
+	fake := prepareFakeCodex(t, supportedVersion, true)
+	workingDirectory, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantCodexHome := filepath.Join(fake.home, ".codex")
+	relativeCodexHome, err := filepath.Rel(workingDirectory, wantCodexHome)
+	if err != nil {
+		t.Skipf("make CODEX_HOME relative to test working directory: %v", err)
+	}
+	if filepath.IsAbs(relativeCodexHome) {
+		t.Skipf("filepath.Rel returned absolute CODEX_HOME %q", relativeCodexHome)
+	}
+	t.Setenv("CODEX_HOME", relativeCodexHome)
+
+	discovery, err := codex.Discover(testContext(t))
+	if err != nil {
+		t.Fatalf("discover Codex with relative CODEX_HOME: %v", err)
+	}
+	if _, err := discovery.Adapter.Run(testContext(t), review.Request{Plan: []byte("public plan")}); err != nil {
+		t.Fatalf("run Codex with resolved CODEX_HOME: %v", err)
+	}
+
+	invocations := readInvocations(t, fake.invocationPath)
+	var authenticationInvocations []invocation
+	for _, item := range invocations {
+		if slices.Equal(item.Args, []string{"login", "status"}) {
+			authenticationInvocations = append(authenticationInvocations, item)
+		}
+	}
+	if got, want := len(authenticationInvocations), 1; got != want {
+		t.Fatalf("authentication invocation count = %d, want %d", got, want)
+	}
+	if got := authenticationInvocations[0].CodexHome; got != wantCodexHome {
+		t.Fatalf("authentication CODEX_HOME = %q, want resolved home %q", got, wantCodexHome)
+	}
+
+	runs := reviewInvocations(invocations)
+	if got, want := len(runs), 1; got != want {
+		t.Fatalf("review invocation count in original Codex home = %d, want %d", got, want)
+	}
+	assertReviewInvocation(t, runs[0], []byte("public plan"), wantCodexHome)
+}
+
 func TestDiscoverRejectsUnsupportedVersionBeforeAuthentication(t *testing.T) {
 	fake := prepareFakeCodex(t, "0.145.9", false)
 
