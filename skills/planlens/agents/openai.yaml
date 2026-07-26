@@ -1,0 +1,4 @@
+interface:
+  display_name: "PlanLens"
+  short_description: "Review plans with local AI CLIs"
+  default_prompt: "Use $planlens to review this plan with one or more local AI CLIs."
