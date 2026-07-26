@@ -14,14 +14,14 @@ You need a supported host and at least one compatible reviewer CLI installed and
 
 Install the complete [`skills/planlens`](skills/planlens) directory, including its `references` and `agents` subdirectories.
 
-Use the `v1.0.0` tag for the published release. Replace `v1.0.0` with `main` if you intentionally want the current development version.
+Use the `v1.1.0` tag for the published release. Replace `v1.1.0` with `main` if you intentionally want the current development version.
 
 ### Codex
 
 Ask Codex:
 
 ```text
-Use $skill-installer to install PlanLens from https://github.com/wildbyteai/planlens/tree/v1.0.0/skills/planlens.
+Use $skill-installer to install PlanLens from https://github.com/wildbyteai/planlens/tree/v1.1.0/skills/planlens.
 ```
 
 Invoke it on a later turn with `$planlens`.
