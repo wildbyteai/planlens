@@ -4,7 +4,7 @@ Review whether the proposal is coherent, necessary, executable, and verifiable.
 
 Check:
 
-- The intended outcome is observable, not merely a list of activities.
+- The affected user or owner is explicit; the current baseline, intended outcome, and acceptance signal are observable rather than a list of activities.
 - Scope, non-goals, constraints, assumptions, and unknowns are explicit and consistent.
 - Major decisions have a stated rationale and acknowledge meaningful alternatives or tradeoffs.
 - Steps follow real dependencies and assign clear ownership where ownership matters.
