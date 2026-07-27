@@ -16,51 +16,27 @@ You need a host with the required process and file capabilities, plus at least o
 
 ## Install
 
-PlanLens follows the standard Agent Skills layout. The installers below install the complete [`skills/planlens`](skills/planlens) directory, including its `references` and `agents` subdirectories; the selected installer may copy or link it into the host.
+PlanLens follows the standard Agent Skills layout. The installable Skill is the complete [`skills/planlens`](skills/planlens) directory, including its `references` and `agents` subdirectories. Choose either method below.
 
-### Recommended
+### Ask your Agent
 
-If Node.js is available, use the same cross-Agent installer pattern as other large open-source Skill collections:
+Send this message to an Agent host that supports installing Agent Skills:
+
+```text
+Install the PlanLens skill from https://github.com/wildbyteai/planlens.
+```
+
+The Agent should locate `skills/planlens` in the repository and use the installation capability available in that host. Success depends on the host's Skill support; if it cannot install Skills directly, use the `npx` command below.
+
+### Run the installer yourself
+
+If Node.js is available, run:
 
 ```bash
 npx skills@latest add wildbyteai/planlens
 ```
 
-The installer detects supported Agents and lets you choose the installation target. To install PlanLens for Codex at user scope without prompts:
-
-```bash
-npx skills@latest add wildbyteai/planlens --skill planlens --agent codex --global --yes
-```
-
-The short `npx` command installs the repository's current default-branch version. Use a version-pinned method below when you need the exact published `v1.1.2` release.
-
-### Codex without Node.js
-
-Ask Codex:
-
-```text
-Use $skill-installer to install skills/planlens from the wildbyteai/planlens repository at tag v1.1.2.
-```
-
-This uses Codex's built-in installer and does not require you to install Node.js or GitHub CLI.
-
-### Version-pinned with GitHub CLI
-
-If a recent GitHub CLI is already installed:
-
-```bash
-gh skill install wildbyteai/planlens planlens@v1.1.2 --agent codex --scope user
-```
-
-Change the `--agent` value for another target offered by the installer, or use `--scope project` for a project-only installation. As of July 27, 2026, GitHub CLI marks its Agent Skill commands as preview features.
-
-### Manual fallback
-
-Download the `v1.1.2` source archive, or clone the repository and check out tag `v1.1.2`, before copying the Skill directory.
-
-For Claude Code, copy `skills/planlens` to `~/.claude/skills/planlens` for a personal installation, or to `.claude/skills/planlens` inside one project.
-
-For Antigravity, copy it to `~/.gemini/config/skills/planlens` for a personal installation, or to `.agents/skills/planlens` inside one project.
+The installer detects supported Agents and lets you choose the installation target.
 
 Restart the host if it was already open. Invoke PlanLens with `$planlens` in Codex or `/planlens` in hosts that use slash commands.
 
@@ -69,8 +45,8 @@ Restart the host if it was already open. Invoke PlanLens with `$planlens` in Cod
 | Host | v1 status |
 |---|---|
 | Codex | Installation smoke-tested; complete review rounds have been exercised manually |
-| Claude Code | Install path documented; the full host workflow is not yet part of the v1 test matrix |
-| Antigravity | Install path documented; the full host workflow is not yet part of the v1 test matrix |
+| Claude Code | Installation methods documented; the full host workflow is not yet part of the v1 test matrix |
+| Antigravity | Installation methods documented; the full host workflow is not yet part of the v1 test matrix |
 | Other Agent Skills hosts | Installation may work through a generic installer, but host execution is not verified |
 
 The complete workflow requires the host to launch non-interactive local processes, create temporary directories, and write result files. Installer support alone does not imply verified PlanLens execution.

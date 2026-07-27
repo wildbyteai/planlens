@@ -16,51 +16,27 @@ PlanLens 包含两个角色：宿主 Agent 负责加载 Skill，一个或多个�
 
 ## 安装
 
-PlanLens 遵循标准 Agent Skills 目录结构。下面的安装方式会完整安装 [`skills/planlens`](skills/planlens) 目录，包括其中的 `references` 和 `agents` 子目录；具体安装器可能采用复制或链接。
+PlanLens 遵循标准 Agent Skills 目录结构。需要安装的是完整的 [`skills/planlens`](skills/planlens) 目录，包括其中的 `references` 和 `agents` 子目录。请选择下面任一种方式。
 
-### 推荐方式
+### 直接让 Agent 安装
 
-如果本机已有 Node.js，可以使用与其他大型开源 Skill 项目相同的跨 Agent 安装器：
+把下面一句发给支持安装 Agent Skills 的宿主：
+
+```text
+请从 https://github.com/wildbyteai/planlens 安装 PlanLens Skill。
+```
+
+Agent 应自行找到仓库中的 `skills/planlens`，并使用当前宿主具备的安装能力完成安装。是否成功取决于宿主的 Skill 支持；如果宿主无法直接安装 Skill，再使用下面的 `npx` 命令。
+
+### 自行运行安装命令
+
+如果本机已有 Node.js，执行：
 
 ```bash
 npx skills@latest add wildbyteai/planlens
 ```
 
-安装器会识别受支持的 Agent，并让你选择安装目标。直接以用户级方式安装到 Codex，无需交互选择：
-
-```bash
-npx skills@latest add wildbyteai/planlens --skill planlens --agent codex --global --yes
-```
-
-这条简短的 `npx` 命令安装仓库默认分支的当前版本。如果需要精确安装已经发布的 `v1.1.2`，请使用下面的版本固定方式。
-
-### Codex 未安装 Node.js
-
-对 Codex 说：
-
-```text
-使用 $skill-installer 安装 wildbyteai/planlens 仓库 v1.1.2 标签下的 skills/planlens。
-```
-
-这会使用 Codex 自带的安装器，不要求用户另外安装 Node.js 或 GitHub CLI。
-
-### 使用 GitHub CLI 固定版本
-
-如果本机已经安装较新的 GitHub CLI：
-
-```bash
-gh skill install wildbyteai/planlens planlens@v1.1.2 --agent codex --scope user
-```
-
-安装到安装器列出的其他目标时修改 `--agent`；只在当前项目使用时改为 `--scope project`。截至 2026 年 7 月 27 日，GitHub CLI 仍将 Agent Skill 命令标记为 preview 功能。
-
-### 手动安装兜底
-
-请先下载 `v1.1.2` 源码压缩包，或克隆仓库并检出 `v1.1.2` 标签，再复制 Skill 目录。
-
-Claude Code 个人安装时，将 `skills/planlens` 复制到 `~/.claude/skills/planlens`；仅在一个项目中使用时，复制到项目内的 `.claude/skills/planlens`。
-
-Antigravity 个人安装时，将其复制到 `~/.gemini/config/skills/planlens`；仅在一个项目中使用时，复制到项目内的 `.agents/skills/planlens`。
+安装器会识别受支持的 Agent，并让你选择安装目标。
 
 如果宿主已经打开，请重启。Codex 使用 `$planlens` 调用；使用斜杠命令的宿主通过 `/planlens` 调用。
 
@@ -69,8 +45,8 @@ Antigravity 个人安装时，将其复制到 `~/.gemini/config/skills/planlens`
 | 宿主 | v1 状态 |
 |---|---|
 | Codex | 安装路径已完成烟测；完整评审轮次已进行人工验证 |
-| Claude Code | 已记录安装路径；完整宿主工作流尚未纳入 v1 测试矩阵 |
-| Antigravity | 已记录安装路径；完整宿主工作流尚未纳入 v1 测试矩阵 |
+| Claude Code | 已记录安装方式；完整宿主工作流尚未纳入 v1 测试矩阵 |
+| Antigravity | 已记录安装方式；完整宿主工作流尚未纳入 v1 测试矩阵 |
 | 其他 Agent Skills 宿主 | 通用安装器可能可以完成安装，但尚未验证宿主执行能力 |
 
 完整工作流要求宿主能够启动非交互式本地进程、创建临时目录并写入结果文件。安装器支持某个宿主，不代表 PlanLens 已验证可以在该宿主完整执行。
