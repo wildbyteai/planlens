@@ -96,16 +96,43 @@ $planlens Review docs/plan.md with Claude and Codex
 One invocation performs one round:
 
 1. The primary Agent organizes the plan, its objective, constraints, non-goals, open questions, and only the needed supporting material.
-2. It recommends a review profile and lets the user select one or more local CLIs.
+2. It recommends a review profile and resolves one or more reviewer CLIs from the invocation, project configuration, or built-in default.
 3. It shows the plan source, derived review framing, material list, selected CLIs, and number of calls for one confirmation. Any material change to the candidate request requires a new preview.
 4. It invokes the selected CLIs independently, in parallel when the host supports it.
 5. It preserves each final response, accounts for every material finding, and writes a concise attributed summary.
 
 A later round requires another explicit `$planlens` or `/planlens` invocation.
 
+## Default reviewers
+
+To set the default reviewer CLI for one project, create `.planlens/config.yaml` in that project:
+
+```yaml
+# One reviewer
+default_reviewers:
+  - codex
+```
+
+```yaml
+# Multiple reviewers; order is preserved
+default_reviewers:
+  - codex
+  - claude
+```
+
+Reviewer selection uses this precedence:
+
+1. Reviewers explicitly named in the current `$planlens` or `/planlens` invocation.
+2. `default_reviewers` in the current project's `.planlens/config.yaml`.
+3. The built-in default `codex + claude + kimi`.
+
+Use reviewer IDs from the catalog below. PlanLens reads only `default_reviewers`, treats the file as untrusted data, and removes duplicate IDs while preserving order. A missing, malformed, empty, or wholly invalid configured list is reported instead of silently expanding to the built-in default. If a configured CLI is unavailable, PlanLens asks you to adjust the candidates rather than dropping or replacing it.
+
+This is project-only configuration. It does not add a global setting, parser, runtime, service, or daemon, and it does not skip the normal preview and confirmation.
+
 ## Reviewers
 
-The default review set is `codex + claude + kimi`. Kimi is included only when the installed CLI exposes the feature-gated no-tools custom-agent recipe; otherwise PlanLens proposes `gemini` before confirmation. Gemini is also the preferred fourth reviewer for a broader pass. Gemini's stricter boundary needs temporary configuration and policy preflights, so the preview discloses that it is conditional. PlanLens never substitutes a reviewer after confirmation.
+When the invocation and project configuration do not select reviewers, the built-in review set is `codex + claude + kimi`. Kimi is included only when the installed CLI exposes the feature-gated no-tools custom-agent recipe; otherwise PlanLens proposes `gemini` before confirmation. Gemini is also the preferred fourth reviewer for a broader pass. Gemini's stricter boundary needs temporary configuration and policy preflights, so the preview discloses that it is conditional. PlanLens never substitutes a reviewer after confirmation.
 
 Additional reviewer recipes are available:
 

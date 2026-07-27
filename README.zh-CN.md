@@ -96,16 +96,43 @@ $planlens 使用 Claude 和 Codex 评审 docs/plan.md
 每次调用执行一轮评审：
 
 1. 主 Agent 整理方案、目标、约束、非目标、开放问题和必要的辅助材料。
-2. 主 Agent 推荐评审 Profile，并让用户选择一个或多个本地 CLI。
+2. 主 Agent 推荐评审 Profile，并根据本次调用、项目配置或内置默认值确定一个或多个评审 CLI。
 3. 主 Agent 展示方案来源、推导出的评审框架、材料清单、所选 CLI 和调用次数，统一请求一次确认。候选请求的任何实质变化都必须重新预览。
 4. 宿主支持时并发调用各 CLI；每个 CLI 都独立评审。
 5. 保存每个 CLI 的最终回复，逐项处置所有实质发现，并生成一份标明来源的简明汇总。
 
 如需下一轮，必须再次明确调用 `$planlens` 或 `/planlens`。
 
+## 默认评审 CLI
+
+如需为单个项目设置默认评审 CLI，请在该项目中创建 `.planlens/config.yaml`：
+
+```yaml
+# 单个评审 CLI
+default_reviewers:
+  - codex
+```
+
+```yaml
+# 多个评审 CLI；保留配置顺序
+default_reviewers:
+  - codex
+  - claude
+```
+
+评审 CLI 按以下优先级确定：
+
+1. 本次 `$planlens` 或 `/planlens` 调用中明确指定的评审 CLI。
+2. 当前项目 `.planlens/config.yaml` 中的 `default_reviewers`。
+3. 内置默认组合 `codex + claude + kimi`。
+
+Reviewer ID 必须来自下方目录。PlanLens 只读取 `default_reviewers`，将配置文件视为不可信数据，并在保留顺序的同时去重。如果配置缺失该字段、格式错误、列表为空或完全没有有效 ID，PlanLens 会报告问题，而不是静默扩大为内置默认组合。如果配置的 CLI 不可用，PlanLens 会要求用户调整候选集合，不会静默删除或替换。
+
+该配置仅作用于当前项目，不增加全局配置、解析程序、运行时、服务或守护进程，也不会跳过现有的预览和确认步骤。
+
 ## 评审 CLI
 
-默认评审组合是 `codex + claude + kimi`。只有当本机 Kimi CLI 支持文档规定的无工具自定义 Agent 功能时，PlanLens 才会加入 Kimi；否则会在确认前建议使用 `gemini`。需要更广泛的评审时，Gemini 也是推荐的第四个评审者。Gemini 的边界依赖临时配置和策略预检，因此预览中会明确标为条件方案。用户确认后，PlanLens 不会替换评审 CLI。
+当本次调用和项目配置都没有指定评审 CLI 时，内置默认组合是 `codex + claude + kimi`。只有当本机 Kimi CLI 支持文档规定的无工具自定义 Agent 功能时，PlanLens 才会加入 Kimi；否则会在确认前建议使用 `gemini`。需要更广泛的评审时，Gemini 也是推荐的第四个评审者。Gemini 的边界依赖临时配置和策略预检，因此预览中会明确标为条件方案。用户确认后，PlanLens 不会替换评审 CLI。
 
 除默认组合外，PlanLens 还提供更多评审调用方案：
 
