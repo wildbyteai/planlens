@@ -117,6 +117,7 @@ Use the selected recipes from `references/cli-commands.md`, then invoke each sel
 - Run reviewers concurrently when the host supports parallel tool calls; otherwise run them sequentially.
 - Do not let a reviewer see another reviewer's output from the same round.
 - Respect the user's existing CLI authentication and default model. Pass a model override only when the user explicitly requested it.
+- Apply reviewer-specific host process requirements from `references/cli-commands.md`. Before preview, treat a reviewer as unavailable if the host cannot provide its required execution mode. Disclose the full permission scope in the preview. After confirmation, record the reviewer as failed if the user declines a required platform permission or the launch fails. Never weaken or replace the recipe.
 - Do not install, authenticate, upgrade, downgrade, retry, or substitute a CLI.
 - If the installed version rejects a documented argument, record the reviewer as failed. Do not guess a replacement flag or fall back to a less restrictive mode.
 - Do not start a background service or leave a process running.

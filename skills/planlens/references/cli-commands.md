@@ -75,6 +75,10 @@ Send `request.md` through stdin. Capture the final response as `codex.md`. `--ig
 
 Command: `agy`
 
+Before selection, require local help to expose `--mode`, `--sandbox`, `--print`, `--print-timeout`, and `--log-file`.
+
+Antigravity starts a local language server even in print mode. It must bind random loopback ports and access its normal user authentication and app-data directory. If the host's normal process environment permits both, use it. If the host's outer sandbox blocks either capability, require an execution mode outside that outer sandbox. In Codex, escalated process execution removes the outer sandbox from the entire `agy` child process, giving it normal user-level filesystem and network access, including normal Antigravity app-data and authentication state. Disclose that full scope before confirmation. Keep the empty temporary working directory and Antigravity's own `--sandbox` enabled, but do not describe them as complete isolation because Plan Mode retains read-capable tools. Do not redirect `HOME` or Antigravity's app-data directory to an empty location merely to isolate state, because that also hides its authentication. If the host cannot provide the required execution mode, treat Antigravity as unavailable before preview. If the user later declines the host's platform permission, record the reviewer as failed.
+
 Argument template:
 
 ```text
@@ -82,11 +86,12 @@ agy
   --mode plan
   --sandbox
   --print-timeout 20m
+  --log-file <temporary-log-file>
   [--model <explicit-user-choice>]
   --print <request-text>
 ```
 
-Save stdout as `antigravity.md`. `--print` is the single-prompt mode; do not use `--continue` or `--conversation`. Plan Mode retains read-capable tools and the sandbox is the stronger boundary, so run from an empty temporary directory and keep this reviewer conditional.
+Save stdout as `antigravity.md`. `--print` is the single-prompt mode; do not use `--continue` or `--conversation`. Plan Mode retains read-capable tools, and access to normal Antigravity state weakens isolation, so keep this reviewer conditional. If the process exits non-zero or stdout is empty, inspect the temporary log and include a redacted error excerpt in `antigravity-error.md`; do not retry.
 
 ## Kimi Code CLI
 

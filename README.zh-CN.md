@@ -142,7 +142,7 @@ PlanLens 还收录了以下官方或未进入前十名的 CLI。由于代码仓�
 | 评审者 | ID / 命令 | macOS 快速安装 | 调用方案状态 | 官网 |
 |---|---|---|---|---|
 | Claude Code | `claude` / `claude` | `brew install --cask claude-code` | 禁用工具且不保留会话 | [文档](https://code.claude.com/docs/en/overview) |
-| Antigravity CLI | `antigravity` / `agy` | <code>curl -fsSL https://antigravity.google/cli/install.sh &#124; bash</code> | 条件方案：Plan Mode 加沙箱 | [安装说明](https://antigravity.google/docs/cli/install) |
+| Antigravity CLI | `antigravity` / `agy` | <code>curl -fsSL https://antigravity.google/cli/install.sh &#124; bash</code> | 条件方案：保留内部沙箱；部分宿主须让整个子进程脱离外层沙箱 | [安装说明](https://antigravity.google/docs/cli/install) |
 | Kimi Code CLI | `kimi` / `kimi` | <code>curl -fsSL https://code.kimi.com/kimi-code/install.sh &#124; bash</code> | 支持 `--agent-file` 无工具 Agent 时属于严格方案 | [文档](https://moonshotai.github.io/kimi-code/) |
 | Qoder CLI | `qoder` / `qodercli` | <code>curl -fsSL https://qoder.com/install &#124; bash</code> | 具备无工具、无会话和隔离配置参数时属于严格方案 | [文档](https://docs.qoder.com/en/cli/) |
 | GitHub Copilot CLI | `copilot` / `copilot` | `npm install -g @github/copilot` | 条件方案；工具列表可置空，但自定义状态仍需隔离 | [文档](https://docs.github.com/en/copilot/concepts/agents/about-copilot-cli) |
@@ -193,6 +193,7 @@ Profile 用于指导评审，不是 Schema、可执行插件或自动批准规�
 - 不显示费用估算。
 - 第三方 CLI 可能根据厂商实现和本地配置保留日志或会话。
 - 除非调用方案明确启用了临时会话模式，否则 PlanLens 不承诺删除会话或提供完全隔离。只有接受该边界时，才应发送敏感材料。
+- Antigravity 在 Print Mode 中也会启动本地语言服务器，需要随机回环端口以及正常的 app-data 和认证状态。如果宿主沙箱阻止这些能力，整个 `agy` 子进程必须在宿主外层沙箱之外运行，并获得当前用户级别的正常文件系统和网络访问权限。`agy --sandbox` 与空白评审工作目录仍会保留，但 Plan Mode 仍具备读取能力，因此不能视为完整隔离；预览会披露这项完整权限范围。
 - Kimi Code CLI 必须使用文档规定的临时无工具自定义 Agent。当前版本不允许同时使用 `--prompt` 和 `--plan`，PlanLens 不会退回到没有无工具 Agent 的普通 Prompt 模式。
 
 ## 许可证

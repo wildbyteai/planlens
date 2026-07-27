@@ -142,7 +142,7 @@ PlanLens also catalogs these official or below-cutoff CLIs. They are not mixed i
 | Reviewer | ID / command | macOS quick install | Recipe status | Official site |
 |---|---|---|---|---|
 | Claude Code | `claude` / `claude` | `brew install --cask claude-code` | No tools + no session persistence | [Docs](https://code.claude.com/docs/en/overview) |
-| Antigravity CLI | `antigravity` / `agy` | <code>curl -fsSL https://antigravity.google/cli/install.sh &#124; bash</code> | Conditional: Plan Mode + sandbox | [Install](https://antigravity.google/docs/cli/install) |
+| Antigravity CLI | `antigravity` / `agy` | <code>curl -fsSL https://antigravity.google/cli/install.sh &#124; bash</code> | Conditional: inner sandbox; some hosts must run the child outside their outer sandbox | [Install](https://antigravity.google/docs/cli/install) |
 | Kimi Code CLI | `kimi` / `kimi` | <code>curl -fsSL https://code.kimi.com/kimi-code/install.sh &#124; bash</code> | Strict when `--agent-file` supports a no-tools agent | [Docs](https://moonshotai.github.io/kimi-code/) |
 | Qoder CLI | `qoder` / `qodercli` | <code>curl -fsSL https://qoder.com/install &#124; bash</code> | Strict when no-tools, no-session, and isolated-config flags are present | [Docs](https://docs.qoder.com/en/cli/) |
 | GitHub Copilot CLI | `copilot` / `copilot` | `npm install -g @github/copilot` | Conditional; empty tool set, but custom state still needs containment | [Docs](https://docs.github.com/en/copilot/concepts/agents/about-copilot-cli) |
@@ -193,6 +193,7 @@ The summary status is deterministic: `complete` means every selected reviewer re
 - No monetary cost estimate is displayed.
 - Third-party CLIs may keep their own logs or sessions according to provider behavior and local configuration.
 - Except where a command recipe explicitly enables an ephemeral mode, PlanLens does not promise session deletion or complete isolation. Do not send sensitive material unless that boundary is acceptable.
+- Antigravity starts a local language server in print mode and needs random loopback ports plus its normal app-data and authentication state. On hosts whose sandbox blocks those capabilities, the entire `agy` child process must run outside the host's outer sandbox and receives normal user-level filesystem and network access. `agy --sandbox` and an empty review workspace remain enabled, but they do not provide complete isolation because Plan Mode retains read-capable tools. The preview discloses this full permission scope.
 - Kimi Code CLI must use the documented temporary no-tools custom agent. Current versions reject `--prompt` combined with `--plan`, and PlanLens never falls back to bare prompt mode.
 
 ## License
