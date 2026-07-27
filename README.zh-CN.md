@@ -4,7 +4,7 @@
 
 PlanLens 是一个可安装的 Agent Skill。它会让一个或多个本地 AI CLI 独立评审同一份方案，再由主 Agent 汇总各自的发现和分歧。
 
-PlanLens 有意保持简单：工作流程写在 `SKILL.md` 中。它没有独立运行时、二进制程序、Node 命令、托管服务、守护进程、端口、数据库或状态机。
+PlanLens 有意保持简单：工作流程写在 `SKILL.md` 中。安装完成后，不需要再运行 PlanLens 运行时、二进制程序、Node 命令、托管服务、守护进程、端口、数据库或状态机。
 
 ## 开始之前
 
@@ -14,27 +14,53 @@ PlanLens 包含两个角色：宿主 Agent 负责加载 Skill，一个或多个�
 
 ## 安装
 
-请完整安装 [`skills/planlens`](skills/planlens) 目录，包括其中的 `references` 和 `agents` 子目录。
+PlanLens 遵循标准 Agent Skills 目录结构。下面的安装方式会完整安装 [`skills/planlens`](skills/planlens) 目录，包括其中的 `references` 和 `agents` 子目录；具体安装器可能采用复制或链接。
 
-稳定版本使用 `v1.1.1` 标签。如果明确需要当前开发版本，可以将 `v1.1.1` 替换为 `main`。
+### 推荐方式
 
-### Codex
+如果本机已有 Node.js，可以使用与其他大型开源 Skill 项目相同的跨 Agent 安装器：
+
+```bash
+npx skills@latest add wildbyteai/planlens
+```
+
+安装器会识别受支持的 Agent，并让你选择安装目标。直接以用户级方式安装到 Codex，无需交互选择：
+
+```bash
+npx skills@latest add wildbyteai/planlens --skill planlens --agent codex --global --yes
+```
+
+这条简短的 `npx` 命令安装仓库默认分支的当前版本。如果需要精确安装已经发布的 `v1.1.1`，请使用下面的版本固定方式。
+
+### Codex 未安装 Node.js
 
 对 Codex 说：
 
 ```text
-使用 $skill-installer 从 https://github.com/wildbyteai/planlens/tree/v1.1.1/skills/planlens 安装 PlanLens。
+使用 $skill-installer 安装 wildbyteai/planlens 仓库 v1.1.1 标签下的 skills/planlens。
 ```
 
-在后续对话中使用 `$planlens` 调用。
+这会使用 Codex 自带的安装器，不要求用户另外安装 Node.js 或 GitHub CLI。
 
-### Claude Code
+### 使用 GitHub CLI 固定版本
 
-个人安装时，将 `skills/planlens` 复制到 `~/.claude/skills/planlens`；仅在一个项目中使用时，复制到项目内的 `.claude/skills/planlens`。使用 `/planlens` 调用。
+如果本机已经安装较新的 GitHub CLI：
 
-### Antigravity
+```bash
+gh skill install wildbyteai/planlens planlens@v1.1.1 --agent codex --scope user
+```
 
-个人安装时，将 `skills/planlens` 复制到 `~/.gemini/config/skills/planlens`；仅在一个项目中使用时，复制到项目内的 `.agents/skills/planlens`。如果 CLI 已经打开，请重启后使用 `/planlens` 调用。
+安装到其他受支持宿主时修改 `--agent`；只在当前项目使用时改为 `--scope project`。
+
+### 手动安装兜底
+
+请先下载 `v1.1.1` 源码压缩包，或克隆仓库并检出 `v1.1.1` 标签，再复制 Skill 目录。
+
+Claude Code 个人安装时，将 `skills/planlens` 复制到 `~/.claude/skills/planlens`；仅在一个项目中使用时，复制到项目内的 `.claude/skills/planlens`。
+
+Antigravity 个人安装时，将其复制到 `~/.gemini/config/skills/planlens`；仅在一个项目中使用时，复制到项目内的 `.agents/skills/planlens`。
+
+如果宿主已经打开，请重启。Codex 使用 `$planlens` 调用；使用斜杠命令的宿主通过 `/planlens` 调用。
 
 v1 支持 macOS Apple Silicon、macOS Intel 和 Windows x64。Linux 和 Windows ARM64 暂不属于 v1 支持范围。
 

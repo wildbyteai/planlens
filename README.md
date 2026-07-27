@@ -4,7 +4,7 @@ English | [简体中文](README.zh-CN.md)
 
 PlanLens is an installable Agent Skill that asks one or more local AI CLIs to review the same plan, then lets the primary Agent summarize their findings and disagreements.
 
-It is intentionally small: the workflow lives in `SKILL.md`. There is no PlanLens runtime, binary, Node command, hosted service, daemon, port, database, or state machine.
+It is intentionally small: the workflow lives in `SKILL.md`. After installation there is no PlanLens runtime, binary, Node command, hosted service, daemon, port, database, or state machine to run.
 
 ## Before you start
 
@@ -14,27 +14,53 @@ You need a supported host and at least one compatible reviewer CLI installed and
 
 ## Install
 
-Install the complete [`skills/planlens`](skills/planlens) directory, including its `references` and `agents` subdirectories.
+PlanLens follows the standard Agent Skills layout. The installers below install the complete [`skills/planlens`](skills/planlens) directory, including its `references` and `agents` subdirectories; the selected installer may copy or link it into the host.
 
-Use the `v1.1.1` tag for the published release. Replace `v1.1.1` with `main` if you intentionally want the current development version.
+### Recommended
 
-### Codex
+If Node.js is available, use the same cross-Agent installer pattern as other large open-source Skill collections:
+
+```bash
+npx skills@latest add wildbyteai/planlens
+```
+
+The installer detects supported Agents and lets you choose the installation target. To install PlanLens for Codex at user scope without prompts:
+
+```bash
+npx skills@latest add wildbyteai/planlens --skill planlens --agent codex --global --yes
+```
+
+The short `npx` command installs the repository's current default-branch version. Use a version-pinned method below when you need the exact published `v1.1.1` release.
+
+### Codex without Node.js
 
 Ask Codex:
 
 ```text
-Use $skill-installer to install PlanLens from https://github.com/wildbyteai/planlens/tree/v1.1.1/skills/planlens.
+Use $skill-installer to install skills/planlens from the wildbyteai/planlens repository at tag v1.1.1.
 ```
 
-Invoke it on a later turn with `$planlens`.
+This uses Codex's built-in installer and does not require you to install Node.js or GitHub CLI.
 
-### Claude Code
+### Version-pinned with GitHub CLI
 
-Copy `skills/planlens` to `~/.claude/skills/planlens` for a personal installation, or to `.claude/skills/planlens` inside one project. Invoke it with `/planlens`.
+If a recent GitHub CLI is already installed:
 
-### Antigravity
+```bash
+gh skill install wildbyteai/planlens planlens@v1.1.1 --agent codex --scope user
+```
 
-Copy `skills/planlens` to `~/.gemini/config/skills/planlens` for a personal installation, or to `.agents/skills/planlens` inside one project. Restart the CLI if it was already open, then invoke `/planlens`.
+Change the `--agent` value for another supported host, or use `--scope project` for a project-only installation.
+
+### Manual fallback
+
+Download the `v1.1.1` source archive, or clone the repository and check out tag `v1.1.1`, before copying the Skill directory.
+
+For Claude Code, copy `skills/planlens` to `~/.claude/skills/planlens` for a personal installation, or to `.claude/skills/planlens` inside one project.
+
+For Antigravity, copy it to `~/.gemini/config/skills/planlens` for a personal installation, or to `.agents/skills/planlens` inside one project.
+
+Restart the host if it was already open. Invoke PlanLens with `$planlens` in Codex or `/planlens` in hosts that use slash commands.
 
 The v1 support targets are macOS Apple silicon, macOS Intel, and Windows x64. Linux and Windows ARM64 are not v1 support targets.
 
