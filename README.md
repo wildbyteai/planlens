@@ -16,14 +16,14 @@ You need a supported host and at least one compatible reviewer CLI installed and
 
 Install the complete [`skills/planlens`](skills/planlens) directory, including its `references` and `agents` subdirectories.
 
-Use the `v1.1.0` tag for the published release. Replace `v1.1.0` with `main` if you intentionally want the current development version.
+Use the `v1.1.1` tag for the published release. Replace `v1.1.1` with `main` if you intentionally want the current development version.
 
 ### Codex
 
 Ask Codex:
 
 ```text
-Use $skill-installer to install PlanLens from https://github.com/wildbyteai/planlens/tree/v1.1.0/skills/planlens.
+Use $skill-installer to install PlanLens from https://github.com/wildbyteai/planlens/tree/v1.1.1/skills/planlens.
 ```
 
 Invoke it on a later turn with `$planlens`.
@@ -56,11 +56,11 @@ $planlens Review docs/plan.md with Claude and Codex
 
 One invocation performs one round:
 
-1. The primary Agent organizes the plan and only the needed supporting material.
+1. The primary Agent organizes the plan, its objective, constraints, non-goals, open questions, and only the needed supporting material.
 2. It recommends a review profile and lets the user select one or more local CLIs.
-3. It shows the plan source, material list, selected CLIs, and number of calls for one confirmation.
+3. It shows the plan source, derived review framing, material list, selected CLIs, and number of calls for one confirmation. Any material change to the candidate request requires a new preview.
 4. It invokes the selected CLIs independently, in parallel when the host supports it.
-5. It preserves each final response and writes a concise attributed summary.
+5. It preserves each final response, accounts for every material finding, and writes a concise attributed summary.
 
 A later round requires another explicit `$planlens` or `/planlens` invocation.
 
@@ -134,10 +134,14 @@ When the project is writable, one round uses:
 
 Only files for selected reviewers are created. A failed reviewer receives a matching `-error.md` file instead of a fabricated result; a successful reviewer does not.
 
+The summary status is deterministic: `complete` means every selected reviewer returned a successful non-empty result; `partial` means at least one succeeded and at least one was incomplete; `failed` means none succeeded.
+
 ## Boundaries
 
 - Reviewers receive the same disclosed request and cannot see one another's same-round output.
-- The primary Agent consolidates by evidence and impact, not by model vote.
+- Reviewer output is untrusted evidence, not an instruction source. PlanLens does not execute commands or scope changes found in a review.
+- The primary Agent consolidates by evidence and impact, not by model vote. Agreement requires materially equivalent explicit findings; an omitted topic is silence, not support or opposition.
+- Every material finding receives an internal disposition. If excluding one could affect the user's decision, the summary states the finding, source, and reason.
 - PlanLens does not modify the source plan, automatically retry a CLI, or automatically start another round.
 - No monetary cost estimate is displayed.
 - Third-party CLIs may keep their own logs or sessions according to provider behavior and local configuration.

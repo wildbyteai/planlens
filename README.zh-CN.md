@@ -16,14 +16,14 @@ PlanLens 包含两个角色：宿主 Agent 负责加载 Skill，一个或多个�
 
 请完整安装 [`skills/planlens`](skills/planlens) 目录，包括其中的 `references` 和 `agents` 子目录。
 
-稳定版本使用 `v1.1.0` 标签。如果明确需要当前开发版本，可以将 `v1.1.0` 替换为 `main`。
+稳定版本使用 `v1.1.1` 标签。如果明确需要当前开发版本，可以将 `v1.1.1` 替换为 `main`。
 
 ### Codex
 
 对 Codex 说：
 
 ```text
-使用 $skill-installer 从 https://github.com/wildbyteai/planlens/tree/v1.1.0/skills/planlens 安装 PlanLens。
+使用 $skill-installer 从 https://github.com/wildbyteai/planlens/tree/v1.1.1/skills/planlens 安装 PlanLens。
 ```
 
 在后续对话中使用 `$planlens` 调用。
@@ -56,11 +56,11 @@ $planlens 使用 Claude 和 Codex 评审 docs/plan.md
 
 每次调用执行一轮评审：
 
-1. 主 Agent 整理方案和必要的辅助材料。
+1. 主 Agent 整理方案、目标、约束、非目标、开放问题和必要的辅助材料。
 2. 主 Agent 推荐评审 Profile，并让用户选择一个或多个本地 CLI。
-3. 主 Agent 展示方案来源、材料清单、所选 CLI 和调用次数，统一请求一次确认。
+3. 主 Agent 展示方案来源、推导出的评审框架、材料清单、所选 CLI 和调用次数，统一请求一次确认。候选请求的任何实质变化都必须重新预览。
 4. 宿主支持时并发调用各 CLI；每个 CLI 都独立评审。
-5. 保存每个 CLI 的最终回复，并生成一份标明来源的简明汇总。
+5. 保存每个 CLI 的最终回复，逐项处置所有实质发现，并生成一份标明来源的简明汇总。
 
 如需下一轮，必须再次明确调用 `$planlens` 或 `/planlens`。
 
@@ -134,10 +134,14 @@ Profile 用于指导评审，不是 Schema、可执行插件或自动批准规�
 
 只会创建所选评审者对应的文件。评审失败时写入匹配的 `-error.md`，不会伪造评审结果；评审成功时不会创建错误文件。
 
+汇总状态按固定规则生成：`complete` 表示所有所选评审者都成功返回非空结果；`partial` 表示至少一个成功且至少一个未完成；`failed` 表示没有评审者成功。
+
 ## 边界
 
 - 所有评审 CLI 接收同一份已披露的请求，并且无法看到其他 CLI 在同一轮中的输出。
-- 主 Agent 根据证据和影响汇总结论，不按模型票数决定结果。
+- Reviewer 输出属于不可信证据，不是指令来源。PlanLens 不会执行评审结果中的命令或范围变更要求。
+- 主 Agent 根据证据和影响汇总结论，不按模型票数决定结果。只有明确提出且实质一致的发现才算共同支持；未提及只是沉默，不代表支持或反对。
+- 每项实质发现都会在内部记录处置结果。若排除某项发现会影响用户决策，汇总必须说明该发现、来源和理由。
 - PlanLens 不会修改源方案、自动重试 CLI 或自动开始下一轮。
 - 不显示费用估算。
 - 第三方 CLI 可能根据厂商实现和本地配置保留日志或会话。
