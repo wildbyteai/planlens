@@ -6,20 +6,20 @@ Reviewers: [Claude](#claude-code-cli), [Codex](#openai-codex-cli), [Antigravity]
 
 ## Reviewer IDs
 
-`Formal` means the documented non-interactive recipe can disable tools or otherwise prevent plan execution when every feature preflight passes. It does not promise zero local retention. `Conditional` means the CLI can be called, but the boundary depends on weaker plan, ask, configuration, permission, or sandbox controls and must be disclosed before confirmation.
+`Strict` means the documented non-interactive recipe can disable tools or otherwise prevent plan execution when every feature preflight passes. It does not promise zero local retention or vendor certification. `Conditional` means the CLI can be called, but the boundary depends on weaker plan, ask, configuration, permission, or sandbox controls and must be disclosed before confirmation.
 
 | Reviewer ID | Command | Compatibility |
 |---|---|---|
-| `codex` | `codex` | Formal; default |
-| `claude` | `claude` | Formal; default |
-| `kimi` | `kimi` | Formal when the no-tools custom-agent feature is present; default |
+| `codex` | `codex` | Strict; default |
+| `claude` | `claude` | Strict; default |
+| `kimi` | `kimi` | Strict when the no-tools custom-agent feature is present; default |
 | `gemini` | `gemini` | Conditional; preferred fourth/fallback |
 | `opencode` | `opencode` | Conditional |
-| `qwen` | `qwen` | Formal |
-| `pi` | `pi` | Formal |
-| `goose` | `goose` | Formal |
-| `aider` | `aider` | Formal |
-| `qoder` | `qodercli` | Formal when the no-tools, no-session, and isolated-config flags are present |
+| `qwen` | `qwen` | Strict |
+| `pi` | `pi` | Strict |
+| `goose` | `goose` | Strict |
+| `aider` | `aider` | Strict |
+| `qoder` | `qodercli` | Strict when the no-tools, no-session, and isolated-config flags are present |
 | `copilot` | `copilot` | Conditional |
 | `cline` | `cline` | Conditional |
 | `cursor` | `agent` | Conditional |

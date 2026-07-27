@@ -15,12 +15,12 @@ This note records the primary-source research used to decide which local AI CLIs
 
 - Default: `codex + claude + kimi`, with Kimi gated on the documented no-tools custom-agent feature.
 - Preferred fourth reviewer or replacement for an unavailable default: `gemini`.
-- Formal compatibility after command validation: `codex`, `claude`, `kimi`, `qwen`, `pi`, `goose`, `aider`, and feature-gated `qoder`.
+- Strict-recipe compatibility after command validation: `codex`, `claude`, `kimi`, `qwen`, `pi`, `goose`, `aider`, and feature-gated `qoder`.
 - Conditional compatibility: `gemini`, `opencode`, `copilot`, `cline`, `cursor`, `antigravity`, `zcode`, `crush`, and `kilo`.
 
 This file records the landscape and ranking work. The later argument and isolation validation in [cli-validation-2026-07-26.md](cli-validation-2026-07-26.md) supersedes any recipe detail below when the two differ.
 
-Formal compatibility means a non-interactive recipe and its required preflight are documented. It does not promise that every CLI version or local configuration passes. Conditional compatibility requires explicit user selection and disclosure of a weaker boundary.
+Strict-recipe compatibility means a non-interactive recipe and its required preflight are documented. It does not promise that every CLI version or local configuration passes, and it does not represent vendor certification or official support. Conditional compatibility requires explicit user selection and disclosure of a weaker boundary.
 
 ## Active open-source top 10
 
@@ -243,9 +243,9 @@ These do not participate in the open-source star ranking. “Suitable” means o
 |---|---|---|---|---|
 | Claude Code | [setup](https://code.claude.com/docs/en/setup), [CLI reference](https://code.claude.com/docs/en/cli-reference) | `curl -fsSL https://claude.ai/install.sh \| bash` or `brew install --cask claude-code` | `claude` | Suitable: safe mode, no built-in tools, and no session persistence |
 | GitHub Copilot CLI | [installation](https://docs.github.com/en/copilot/how-tos/copilot-cli/install-copilot-cli), [programmatic reference](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-programmatic-reference) | `brew install copilot-cli` or `npm install -g @github/copilot` | `copilot` | Conditional; an empty available-tool set is supported, but no strict no-session flag exists |
-| Qoder CLI | [quick start](https://docs.qoder.com/en/cli/quick-start), [usage](https://docs.qoder.com/en/cli/using-cli), [permissions](https://docs.qoder.com/en/cli/permissions) | `curl -fsSL https://qoder.com/install \| bash` | `qodercli` | Formal when no-tools, no-session-persistence, strict MCP, and isolated-config flags are present |
+| Qoder CLI | [quick start](https://docs.qoder.com/en/cli/quick-start), [usage](https://docs.qoder.com/en/cli/using-cli), [permissions](https://docs.qoder.com/en/cli/permissions) | `curl -fsSL https://qoder.com/install \| bash` | `qodercli` | Strict when no-tools, no-session-persistence, strict MCP, and isolated-config flags are present |
 | Cursor Agent | [installation](https://cursor.com/docs/cli/installation), [parameters](https://cursor.com/docs/cli/reference/parameters), [headless](https://cursor.com/docs/cli/headless) | `curl https://cursor.com/install -fsS \| bash` | `agent` | Conditional: Ask/Plan Mode without `--force`; workspace sandbox is not read-only |
-| Kimi Code CLI | [current repository](https://github.com/MoonshotAI/kimi-code), [command reference](https://github.com/MoonshotAI/kimi-code/blob/main/docs/en/reference/kimi-command.md), [agents](https://moonshotai.github.io/kimi-code/en/customization/agents.html) | `curl -fsSL https://code.kimi.com/kimi-code/install.sh \| bash` | `kimi` | Formal for versions exposing `--agent-file`; use an explicit no-tools/no-subagents custom agent |
+| Kimi Code CLI | [current repository](https://github.com/MoonshotAI/kimi-code), [command reference](https://github.com/MoonshotAI/kimi-code/blob/main/docs/en/reference/kimi-command.md), [agents](https://moonshotai.github.io/kimi-code/en/customization/agents.html) | `curl -fsSL https://code.kimi.com/kimi-code/install.sh \| bash` | `kimi` | Strict for versions exposing `--agent-file`; use an explicit no-tools/no-subagents custom agent |
 | ZCode CLI | [product site](https://zcode.z.ai/) | Install the desktop app; no standalone CLI installer or guaranteed PATH command is published | bundled `zcode.cjs` | Conditional local compatibility only; `--prompt` defaults to yolo, so explicit `--mode plan` is mandatory |
 | Amp | [official manual](https://ampcode.com/manual) | Use the installer documented by the official manual | `amp` | Do not add until a current official no-tools/read-only one-shot recipe is verified |
 | Antigravity CLI | [official installation](https://antigravity.google/docs/cli/install) | `curl -fsSL https://antigravity.google/cli/install.sh \| bash` | `agy` | Conditional: public install is verified; keep `--mode plan --sandbox --print`, but its complete isolation boundary still needs versioned validation |
@@ -349,7 +349,7 @@ The bundled ZCode 0.15.0 source supports the `ZCODE_MODEL`, `ZCODE_STORAGE_DIR`,
 | Project | Snapshot | Decision |
 |---|---:|---|
 | Plandex | 15,545 stars | Active candidate below the top-10 cutoff; not researched deeply enough in this pass for a safe reviewer recipe |
-| Kimi Code CLI | 5,127 stars in the current `MoonshotAI/kimi-code` repository | Below the open-source top-10 cutoff but formally compatible through the version-gated no-tools custom-agent recipe; never use `--plan --prompt` or bare prompt mode |
+| Kimi Code CLI | 5,127 stars in the current `MoonshotAI/kimi-code` repository | Below the open-source top-10 cutoff but strict-recipe compatible through the version-gated no-tools custom-agent recipe; never use `--plan --prompt` or bare prompt mode |
 | OpenHands CLI | 224 stars in `OpenHands/OpenHands-CLI` | CLI-specific repository is primarily stability-maintained; headless mode auto-approves actions, so do not run directly on the host as a reviewer |
 | Continue | 35,118 stars | Official README says the repository is no longer actively maintained and is read-only; excluded despite its star count |
 | GPT Pilot | 33,726 stars | Official README says it is unmaintained and discloses a credential-stealing supply-chain compromise from 2025-08-24 through 2026-06-11; do not recommend or support |

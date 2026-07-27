@@ -8,22 +8,22 @@ This note records the evidence behind PlanLens's third-party CLI recipes. It is 
 - Local installations were isolated under a temporary directory. Existing `codex`, `claude`, `kimi`, `agy`, and the ZCode desktop app were inspected in place.
 - Validation was limited to package provenance, installer behavior, version output, help output, argument parsing, configuration/source inspection, and filesystem side effects.
 - No account login was started, no review prompt was sent, and no model was called.
-- A recipe is `Formal` only when its documented preflight can remove tools or otherwise prevent execution of the reviewed plan. `Conditional` means the CLI remains usable, but a weaker configuration, plan, ask, permission, or sandbox boundary must be disclosed.
+- A recipe is `Strict` only when its documented preflight can remove tools or otherwise prevent execution of the reviewed plan. This is an internal PlanLens category, not vendor certification. `Conditional` means the CLI remains usable, but a weaker configuration, plan, ask, permission, or sandbox boundary must be disclosed.
 
 ## Validated matrix
 
 | Reviewer | Version/build checked | Evidence | PlanLens status | Main boundary |
 |---|---:|---|---|---|
-| OpenAI Codex CLI | `0.146.0-alpha.3.1` | Existing local CLI; version/help and parser | Formal | Read-only sandbox, ephemeral session, ignored user config/rules, empty cwd |
-| Claude Code | `2.1.218` | Existing local CLI; version/help | Formal | Safe Mode, empty built-in tool list, no session persistence |
-| Kimi Code CLI | `0.29.1` | Existing local CLI; version/help and installed source | Formal when feature-gated | Temporary no-tools/no-subagents agent; hooks/session caveat remains |
+| OpenAI Codex CLI | `0.146.0-alpha.3.1` | Existing local CLI; version/help and parser | Strict | Read-only sandbox, ephemeral session, ignored user config/rules, empty cwd |
+| Claude Code | `2.1.218` | Existing local CLI; version/help | Strict | Safe Mode, empty built-in tool list, no session persistence |
+| Kimi Code CLI | `0.29.1` | Existing local CLI; version/help and installed source | Strict when feature-gated | Temporary no-tools/no-subagents agent; hooks/session caveat remains |
 | Gemini CLI | `0.52.0` | Official npm package in temporary prefix; version/help and source | Conditional | Deny-all admin policy plus isolated temporary CLI home |
 | OpenCode | `1.18.5` | Official npm package/platform binary in temporary prefix | Conditional | Inline global deny, pure mode, isolated config/data roots; no no-session flag |
-| Qwen Code | `0.21.0` | Official npm package in temporary prefix; parser and source | Formal | Safe Mode, Plan Mode, sandbox, zero tool-call limit |
-| Pi | `0.82.1` | Official npm package in temporary prefix; version/help | Formal | Explicit no-tools, no-resources, no-session flags |
-| goose | `1.44.0` | Official installer into temporary bin directory; version/help | Formal | No profile extensions and vendor no-session mode |
-| Aider | `0.86.2` | Official PyPI package in temporary Python 3.12 venv; version/help | Formal | Ask Mode, dry-run, no repository automation, isolated config/history |
-| Qoder CLI | `1.1.5` | Official checksum-verifying installer in temporary home; version/help/parser | Formal when feature-gated | Empty tool set, wildcard deny, no session persistence, isolated config |
+| Qwen Code | `0.21.0` | Official npm package in temporary prefix; parser and source | Strict | Safe Mode, Plan Mode, sandbox, zero tool-call limit |
+| Pi | `0.82.1` | Official npm package in temporary prefix; version/help | Strict | Explicit no-tools, no-resources, no-session flags |
+| goose | `1.44.0` | Official installer into temporary bin directory; version/help | Strict | No profile extensions and vendor no-session mode |
+| Aider | `0.86.2` | Official PyPI package in temporary Python 3.12 venv; version/help | Strict | Ask Mode, dry-run, no repository automation, isolated config/history |
+| Qoder CLI | `1.1.5` | Official checksum-verifying installer in temporary home; version/help/parser | Strict when feature-gated | Empty tool set, wildcard deny, no session persistence, isolated config |
 | GitHub Copilot CLI | `1.0.75` | Official npm package/platform binary in temporary prefix; help/parser | Conditional | Empty available-tool set and temporary Copilot home; no no-session flag |
 | Cline CLI | `3.0.46` | Official npm package/platform binary in temporary prefix; version/help | Conditional | Plan Mode plus isolated config/data/hooks; read/search/MCP capability remains |
 | Cursor Agent CLI | `2026.07.23-e383d2b` | Official installer in temporary home; version/help | Conditional | Ask Mode plus deny-all CLI permissions; sandbox itself is read/write |

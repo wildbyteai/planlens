@@ -168,7 +168,7 @@ This is the shortest cross-Agent path, but it requires Node.js and follows the c
 Ask Codex:
 
 ```text
-Use $skill-installer to install skills/planlens from the wildbyteai/planlens repository at tag v1.1.1.
+Use $skill-installer to install skills/planlens from the wildbyteai/planlens repository at tag v1.1.2.
 ```
 
 This uses the system Skill already included with Codex and does not require Node.js or GitHub CLI.
@@ -176,7 +176,7 @@ This uses the system Skill already included with Codex and does not require Node
 ### 3. Version-pinned: GitHub CLI
 
 ```bash
-gh skill install wildbyteai/planlens planlens@v1.1.1 --agent codex --scope user
+gh skill install wildbyteai/planlens planlens@v1.1.2 --agent codex --scope user
 ```
 
 Use this when a recent GitHub CLI is already installed and the exact release must be pinned. Change `--agent` or `--scope` for another supported target.
@@ -198,13 +198,19 @@ For each PlanLens release:
 
 ## Local verification performed
 
-The following was verified on this machine with GitHub CLI 2.95.0:
+The following historical release checks were verified on this machine with GitHub CLI 2.95.0:
 
 - `gh skill preview wildbyteai/planlens planlens@v1.1.1` succeeded.
 - An isolated `gh skill install ... --dir <temporary-directory>` succeeded.
 - The installer selected tag `v1.1.1`, installed `SKILL.md`, `agents/`, and `references/`, and injected repository/ref metadata.
-- `gh skill publish --dry-run` passed, with one recommendation: add a `license` field to PlanLens's `SKILL.md` frontmatter.
-- `npx --yes skills@latest add wildbyteai/planlens --list` detected Codex, cloned the repository, and discovered exactly one Skill named `planlens`.
+- `gh skill publish --dry-run` passed; its recommendation to add a `license` field was addressed during the `v1.1.2` release preparation.
+
+The `v1.1.2` release-candidate checks also verified:
+
+- `npx skills@latest add wildbyteai/planlens --skill planlens --agent codex --yes --copy` completed in an isolated project and installed `SKILL.md`, `agents/`, and all `references/` files.
+- Codex's built-in installer helper completed an isolated install of the published `v1.1.1` tree with the same complete file set; the exact `v1.1.2` tag is rechecked after publication.
+- Complete PlanLens review rounds were exercised manually in Codex and produced `request.md`, reviewer outputs, and `summary.md` artifacts.
+- `gh skill publish --dry-run` passed without warnings after the `license: Apache-2.0` frontmatter was added.
 
 ## Decision for PlanLens
 

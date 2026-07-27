@@ -10,7 +10,9 @@ It is intentionally small: the workflow lives in `SKILL.md`. After installation 
 
 PlanLens has two roles: a host Agent loads the Skill, and one or more reviewer CLIs return independent feedback. The host and a reviewer may be the same product.
 
-You need a supported host and at least one compatible reviewer CLI installed and authenticated. Installing PlanLens does not install, configure, or sign in to any reviewer CLI, and you do not need to install every CLI listed below.
+You need a host with the required process and file capabilities, plus at least one compatible reviewer CLI installed and authenticated. Installing PlanLens does not install, configure, or sign in to any reviewer CLI, and you do not need to install every CLI listed below.
+
+"Local CLI" describes where the command starts, not where the model runs. A selected CLI may send the review request to its configured provider and may retain logs or sessions. Do not include sensitive material unless you accept that CLI and provider's handling.
 
 ## Install
 
@@ -30,14 +32,14 @@ The installer detects supported Agents and lets you choose the installation targ
 npx skills@latest add wildbyteai/planlens --skill planlens --agent codex --global --yes
 ```
 
-The short `npx` command installs the repository's current default-branch version. Use a version-pinned method below when you need the exact published `v1.1.1` release.
+The short `npx` command installs the repository's current default-branch version. Use a version-pinned method below when you need the exact published `v1.1.2` release.
 
 ### Codex without Node.js
 
 Ask Codex:
 
 ```text
-Use $skill-installer to install skills/planlens from the wildbyteai/planlens repository at tag v1.1.1.
+Use $skill-installer to install skills/planlens from the wildbyteai/planlens repository at tag v1.1.2.
 ```
 
 This uses Codex's built-in installer and does not require you to install Node.js or GitHub CLI.
@@ -47,20 +49,31 @@ This uses Codex's built-in installer and does not require you to install Node.js
 If a recent GitHub CLI is already installed:
 
 ```bash
-gh skill install wildbyteai/planlens planlens@v1.1.1 --agent codex --scope user
+gh skill install wildbyteai/planlens planlens@v1.1.2 --agent codex --scope user
 ```
 
-Change the `--agent` value for another supported host, or use `--scope project` for a project-only installation.
+Change the `--agent` value for another target offered by the installer, or use `--scope project` for a project-only installation. As of July 27, 2026, GitHub CLI marks its Agent Skill commands as preview features.
 
 ### Manual fallback
 
-Download the `v1.1.1` source archive, or clone the repository and check out tag `v1.1.1`, before copying the Skill directory.
+Download the `v1.1.2` source archive, or clone the repository and check out tag `v1.1.2`, before copying the Skill directory.
 
 For Claude Code, copy `skills/planlens` to `~/.claude/skills/planlens` for a personal installation, or to `.claude/skills/planlens` inside one project.
 
 For Antigravity, copy it to `~/.gemini/config/skills/planlens` for a personal installation, or to `.agents/skills/planlens` inside one project.
 
 Restart the host if it was already open. Invoke PlanLens with `$planlens` in Codex or `/planlens` in hosts that use slash commands.
+
+### Host status
+
+| Host | v1 status |
+|---|---|
+| Codex | Installation smoke-tested; complete review rounds have been exercised manually |
+| Claude Code | Install path documented; the full host workflow is not yet part of the v1 test matrix |
+| Antigravity | Install path documented; the full host workflow is not yet part of the v1 test matrix |
+| Other Agent Skills hosts | Installation may work through a generic installer, but host execution is not verified |
+
+The complete workflow requires the host to launch non-interactive local processes, create temporary directories, and write result files. Installer support alone does not imply verified PlanLens execution.
 
 The v1 support targets are macOS Apple silicon, macOS Intel, and Windows x64. Linux and Windows ARM64 are not v1 support targets.
 
@@ -94,12 +107,15 @@ A later round requires another explicit `$planlens` or `/planlens` invocation.
 
 The default review set is `codex + claude + kimi`. Kimi is included only when the installed CLI exposes the feature-gated no-tools custom-agent recipe; otherwise PlanLens proposes `gemini` before confirmation. Gemini is also the preferred fourth reviewer for a broader pass. Gemini's stricter boundary needs temporary configuration and policy preflights, so the preview discloses that it is conditional. PlanLens never substitutes a reviewer after confirmation.
 
-The system remains wider than the default:
+Additional reviewer recipes are available:
 
-- Formal compatibility: `codex`, `claude`, `kimi`, `qwen`, `pi`, `goose`, `aider`, and feature-gated `qoder`.
-- Conditional compatibility: `gemini`, `opencode`, `copilot`, `cline`, `cursor`, `antigravity`, `zcode`, `crush`, and `kilo`.
+- Strict recipe: `codex`, `claude`, `kimi`, `qwen`, `pi`, `goose`, `aider`, and feature-gated `qoder`.
+- Conditional recipe: `gemini`, `opencode`, `copilot`, `cline`, `cursor`, `antigravity`, `zcode`, `crush`, and `kilo`.
 
-Formal compatibility means a documented non-interactive recipe can disable tools or otherwise prevent plan execution when its preflight passes. It does not promise zero local retention. Conditional reviewers rely on a weaker plan, ask, configuration, permission, or sandbox boundary and require explicit disclosure before confirmation.
+Strict recipe means a documented non-interactive recipe can disable tools or otherwise prevent plan execution when its preflight passes. It does not promise zero local retention. Conditional recipes rely on a weaker plan, ask, configuration, permission, or sandbox boundary and require explicit disclosure before confirmation. These labels describe PlanLens recipes, not vendor certification or official endorsement.
+
+<details>
+<summary>Reviewer catalog, installation commands, and ranking snapshot</summary>
 
 The first table is a snapshot taken on 2026-07-26: actively maintained, source-available coding-agent CLIs with an official install path and a single-process non-interactive mode, ranked by GitHub stars. Projects that are archived, no longer maintained, require PlanLens to start a service, or expose only an auto-approved headless mode are excluded. See the [research note](research/cli-landscape-2026-07-26.md) for the method and exclusions.
 
@@ -124,11 +140,13 @@ PlanLens also catalogs these official or below-cutoff CLIs. They are not mixed i
 |---|---|---|---|---|
 | Claude Code | `claude` / `claude` | `brew install --cask claude-code` | No tools + no session persistence | [Docs](https://code.claude.com/docs/en/overview) |
 | Antigravity CLI | `antigravity` / `agy` | <code>curl -fsSL https://antigravity.google/cli/install.sh &#124; bash</code> | Conditional: Plan Mode + sandbox | [Install](https://antigravity.google/docs/cli/install) |
-| Kimi Code CLI | `kimi` / `kimi` | <code>curl -fsSL https://code.kimi.com/kimi-code/install.sh &#124; bash</code> | Formal when `--agent-file` supports a no-tools agent | [Docs](https://moonshotai.github.io/kimi-code/) |
-| Qoder CLI | `qoder` / `qodercli` | <code>curl -fsSL https://qoder.com/install &#124; bash</code> | Formal when no-tools, no-session, and isolated-config flags are present | [Docs](https://docs.qoder.com/en/cli/) |
+| Kimi Code CLI | `kimi` / `kimi` | <code>curl -fsSL https://code.kimi.com/kimi-code/install.sh &#124; bash</code> | Strict when `--agent-file` supports a no-tools agent | [Docs](https://moonshotai.github.io/kimi-code/) |
+| Qoder CLI | `qoder` / `qodercli` | <code>curl -fsSL https://qoder.com/install &#124; bash</code> | Strict when no-tools, no-session, and isolated-config flags are present | [Docs](https://docs.qoder.com/en/cli/) |
 | GitHub Copilot CLI | `copilot` / `copilot` | `npm install -g @github/copilot` | Conditional; empty tool set, but custom state still needs containment | [Docs](https://docs.github.com/en/copilot/concepts/agents/about-copilot-cli) |
 | Cursor Agent CLI | `cursor` / `agent` | <code>curl https://cursor.com/install -fsS &#124; bash</code> | Conditional; sandbox is not read-only | [Docs](https://cursor.com/docs/cli/overview) |
 | ZCode CLI | `zcode` / bundled `zcode.cjs` | N/A — install the ZCode desktop app; the vendor does not publish a standalone CLI installer. | Local bundled 0.15.0; conditional | [Docs](https://zcode.z.ai/en/docs) |
+
+</details>
 
 PlanLens does not install, authenticate, update, bundle, or replace these CLIs. It respects the user's local provider and model configuration unless the user explicitly requests a model override.
 
