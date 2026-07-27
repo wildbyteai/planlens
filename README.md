@@ -1,3 +1,5 @@
+English | [简体中文](README.zh-CN.md)
+
 # PlanLens
 
 PlanLens is an installable Agent Skill that asks one or more local AI CLIs to review the same plan, then lets the primary Agent summarize their findings and disagreements.
