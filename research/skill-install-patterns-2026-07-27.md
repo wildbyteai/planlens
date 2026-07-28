@@ -179,7 +179,7 @@ This uses the system Skill already included with Codex and does not require Node
 gh skill install wildbyteai/planlens planlens@v1.1.2 --agent codex --scope user
 ```
 
-Use this when a recent GitHub CLI is already installed and the exact release must be pinned. Change `--agent` or `--scope` for another supported target.
+Use this when a recent GitHub CLI is already installed and the exact Git tag must be pinned. Change `--agent` or `--scope` for another supported target.
 
 ### 4. Final fallback: manual copy
 
@@ -187,25 +187,25 @@ Keep manual copying for older or unsupported hosts, but do not make it the first
 
 ## Publishing recommendation
 
-For each PlanLens release:
+For each PlanLens version:
 
 1. Keep the portable Skill under `skills/planlens/`.
 2. Validate locally with `gh skill publish --dry-run`.
-3. Publish a semantic Git tag and GitHub Release.
+3. Publish a semantic Git tag. Do not create a GitHub Release for a Skill-only version; installers resolve the repository and tag directly. Use GitHub Releases only if a future version distributes binaries or attached assets.
 4. Keep the short current-version command first and an explicit tag in the reproducible alternatives.
 5. Add the repository topic `agent-skills`.
 6. Keep host-specific adapters optional; do not introduce a PlanLens runtime merely for installation.
 
 ## Local verification performed
 
-The following historical release checks were verified on this machine with GitHub CLI 2.95.0:
+The following historical version checks were verified on this machine with GitHub CLI 2.95.0:
 
 - `gh skill preview wildbyteai/planlens planlens@v1.1.1` succeeded.
 - An isolated `gh skill install ... --dir <temporary-directory>` succeeded.
 - The installer selected tag `v1.1.1`, installed `SKILL.md`, `agents/`, and `references/`, and injected repository/ref metadata.
-- `gh skill publish --dry-run` passed; its recommendation to add a `license` field was addressed during the `v1.1.2` release preparation.
+- `gh skill publish --dry-run` passed; its recommendation to add a `license` field was addressed during the `v1.1.2` version preparation.
 
-The `v1.1.2` release-candidate checks also verified:
+The `v1.1.2` version-candidate checks also verified:
 
 - `npx skills@latest add wildbyteai/planlens --skill planlens --agent codex --yes --copy` completed in an isolated project and installed `SKILL.md`, `agents/`, and all `references/` files.
 - Codex's built-in installer helper completed an isolated install of the published `v1.1.1` tree with the same complete file set; the exact `v1.1.2` tag is rechecked after publication.
