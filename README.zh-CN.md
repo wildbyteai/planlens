@@ -66,14 +66,17 @@ v1 支持 macOS Apple Silicon、macOS Intel 和 Windows x64。Linux 和 Windows 
 ```text
 $planlens
 $planlens 使用 Claude 和 Codex 评审 docs/plan.md
+$planlens 使用 Antigravity 和 Claude Opus 4.6 评审 docs/plan.md
 /planlens path/to/plan.md
 ```
+
+显式指定模型时，如果对应调用方案记录了本地模型列表能力，PlanLens 会用它解析准确 ID；否则本次调用必须直接提供准确模型 ID。PlanLens 会把该 ID 传给评审命令，并在确认预览和最终汇总中显示。对于 Antigravity，只有当 `agy models` 列出 `claude-opus-4-6-thinking` 时，才会把“Claude Opus 4.6”解析为该 ID。没有显式指定时，PlanLens 只显示“CLI 默认模型（未独立验证）”，不会猜测，也不会修改 CLI 的全局默认配置。
 
 每次调用执行一轮评审：
 
 1. 主 Agent 整理方案、目标、约束、非目标、开放问题和必要的辅助材料。
 2. 主 Agent 推荐评审 Profile，并根据本次调用、项目配置或内置默认值确定一个或多个评审 CLI。
-3. 主 Agent 展示方案来源、推导出的评审框架、材料清单、所选 CLI 和调用次数，统一请求一次确认。候选请求的任何实质变化都必须重新预览。
+3. 主 Agent 展示方案来源、推导出的评审框架、材料清单、所选 CLI、模型选择和调用次数，统一请求一次确认。候选请求的任何实质变化都必须重新预览。
 4. 宿主支持时并发调用各 CLI；每个 CLI 都独立评审。
 5. 保存每个 CLI 的最终回复，逐项处置所有实质发现，并生成一份标明来源的简明汇总。
 

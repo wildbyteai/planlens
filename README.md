@@ -66,14 +66,17 @@ Examples:
 ```text
 $planlens
 $planlens Review docs/plan.md with Claude and Codex
+$planlens Review docs/plan.md with Antigravity using Claude Opus 4.6
 /planlens path/to/plan.md
 ```
+
+When a model is explicitly requested, PlanLens uses the reviewer's local model-list capability when the recipe documents one; otherwise the invocation must provide an exact model ID. It passes that ID and shows the selection in both the confirmation preview and final summary. For Antigravity, `Claude Opus 4.6` resolves to `claude-opus-4-6-thinking` only when `agy models` lists that ID. Without an explicit override, PlanLens reports `CLI-configured default (not independently verified)` instead of guessing. This does not change the CLI's global default configuration.
 
 One invocation performs one round:
 
 1. The primary Agent organizes the plan, its objective, constraints, non-goals, open questions, and only the needed supporting material.
 2. It recommends a review profile and resolves one or more reviewer CLIs from the invocation, project configuration, or built-in default.
-3. It shows the plan source, derived review framing, material list, selected CLIs, and number of calls for one confirmation. Any material change to the candidate request requires a new preview.
+3. It shows the plan source, derived review framing, material list, selected CLIs and model selections, and number of calls for one confirmation. Any material change to the candidate request requires a new preview.
 4. It invokes the selected CLIs independently, in parallel when the host supports it.
 5. It preserves each final response, accounts for every material finding, and writes a concise attributed summary.
 
