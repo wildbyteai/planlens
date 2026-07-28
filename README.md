@@ -128,7 +128,7 @@ The install commands below are documentation only; PlanLens never runs them. The
 |---:|---|---|---:|---|---|---|
 | 1 | OpenCode | `opencode` / `opencode` | 189,808 | `brew install anomalyco/tap/opencode` | Conditional; merged config and persisted sessions | [Docs](https://opencode.ai/docs/) |
 | 2 | Gemini CLI | `gemini` / `gemini` | 106,189 | `brew install gemini-cli` | Conditional; deny-all policy plus config isolation | [Docs](https://geminicli.com/docs/) |
-| 3 | OpenAI Codex CLI | `codex` / `codex` | 101,551 | `brew install --cask codex` | Read-only + ephemeral | [Docs](https://developers.openai.com/codex/cli/) |
+| 3 | OpenAI Codex CLI | `codex` / `codex` | 101,551 | `brew install --cask codex` | Read-only + ephemeral; some hosts require the child outside their outer sandbox | [Docs](https://developers.openai.com/codex/cli/) |
 | 4 | Pi | `pi` / `pi` | 77,882 | `npm install -g @earendil-works/pi-coding-agent` | No tools/resources/session | [Repository](https://github.com/earendil-works/pi) |
 | 5 | Cline CLI | `cline` / `cline` | 65,067 | `npm install -g cline` | Conditional; Plan Mode is not an OS sandbox | [Docs](https://docs.cline.bot/cli/overview) |
 | 6 | goose | `goose` / `goose` | 51,722 | `brew install block-goose-cli` | No profile/session | [Docs](https://goose.ai/docs/) |
@@ -141,7 +141,7 @@ PlanLens also catalogs these official or below-cutoff CLIs. They are not mixed i
 
 | Reviewer | ID / command | macOS quick install | Recipe status | Official site |
 |---|---|---|---|---|
-| Claude Code | `claude` / `claude` | `brew install --cask claude-code` | No tools + no session persistence | [Docs](https://code.claude.com/docs/en/overview) |
+| Claude Code | `claude` / `claude` | `brew install --cask claude-code` | No tools + no session persistence; some hosts require the child outside their outer sandbox | [Docs](https://code.claude.com/docs/en/overview) |
 | Antigravity CLI | `antigravity` / `agy` | <code>curl -fsSL https://antigravity.google/cli/install.sh &#124; bash</code> | Conditional: inner sandbox; some hosts must run the child outside their outer sandbox | [Install](https://antigravity.google/docs/cli/install) |
 | Kimi Code CLI | `kimi` / `kimi` | <code>curl -fsSL https://code.kimi.com/kimi-code/install.sh &#124; bash</code> | Strict when `--agent-file` supports a no-tools agent | [Docs](https://moonshotai.github.io/kimi-code/) |
 | Qoder CLI | `qoder` / `qodercli` | <code>curl -fsSL https://qoder.com/install &#124; bash</code> | Strict when no-tools, no-session, and isolated-config flags are present | [Docs](https://docs.qoder.com/en/cli/) |
@@ -193,7 +193,7 @@ The summary status is deterministic: `complete` means every selected reviewer re
 - No monetary cost estimate is displayed.
 - Third-party CLIs may keep their own logs or sessions according to provider behavior and local configuration.
 - Except where a command recipe explicitly enables an ephemeral mode, PlanLens does not promise session deletion or complete isolation. Do not send sensitive material unless that boundary is acceptable.
-- Antigravity starts a local language server in print mode and needs random loopback ports plus its normal app-data and authentication state. On hosts whose sandbox blocks those capabilities, the entire `agy` child process must run outside the host's outer sandbox and receives normal user-level filesystem and network access. `agy --sandbox` and an empty review workspace remain enabled, but they do not provide complete isolation because Plan Mode retains read-capable tools. The preview discloses this full permission scope.
+- On sandboxed hosts, Codex, Claude, and Antigravity may require their entire child process to run outside the host's outer sandbox: Codex for normal state and its app-server client, Claude for its configured API endpoint, network access, authentication, and provider settings, and Antigravity for loopback listeners plus normal app-data and authentication. This grants the child normal user-level filesystem and network access. Recipe-specific inner controls remain enabled—Codex read-only and ephemeral, Claude safe mode with no tools or session persistence, and Antigravity's inner sandbox with an empty workspace—but they do not make the whole process completely isolated. The preview discloses the full permission scope.
 - Kimi Code CLI must use the documented temporary no-tools custom agent. Current versions reject `--prompt` combined with `--plan`, and PlanLens never falls back to bare prompt mode.
 
 ## License

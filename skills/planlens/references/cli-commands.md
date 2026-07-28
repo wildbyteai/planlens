@@ -32,6 +32,8 @@ Reviewers: [Claude](#claude-code-cli), [Codex](#openai-codex-cli), [Antigravity]
 
 Command: `claude`
 
+Claude must access its configured API endpoint, network, and normal authentication or provider settings. If the host's outer sandbox blocks any of those required capabilities, require an execution mode outside that outer sandbox. In Codex, escalated process execution removes the outer sandbox from the entire `claude` child process and gives it normal user-level filesystem and network access. Disclose that full scope before confirmation. Keep `--safe-mode`, `--tools ""`, `--no-session-persistence`, and the empty temporary working directory. If the host cannot provide the required execution mode, treat Claude as unavailable before preview. If the user later declines the host's platform permission, record the reviewer as failed.
+
 Argument template:
 
 ```text
@@ -53,6 +55,8 @@ Save stdout as `claude.md`. Safe mode disables customizations including plugins,
 ## OpenAI Codex CLI
 
 Command: `codex`
+
+Codex must access its normal `CODEX_HOME` authentication and state and initialize its in-process app-server client. If the host's outer sandbox makes that state read-only or blocks the client, require an execution mode outside that outer sandbox. For a nested Codex launch, escalated process execution removes the outer sandbox from the entire child process and gives it normal user-level filesystem and network access. Disclose that full scope before confirmation. Keep the child Codex `--sandbox read-only`, `--ephemeral`, ignored config and rules, and empty temporary working directory, but do not describe the whole process as completely isolated. Do not redirect `CODEX_HOME` to an empty directory merely to isolate state, because that also hides authentication. If the host cannot provide the required execution mode, treat Codex as unavailable before preview. If the user later declines the host's platform permission, record the reviewer as failed.
 
 Argument template:
 
