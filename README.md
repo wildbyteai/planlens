@@ -191,6 +191,7 @@ The summary status is deterministic: `complete` means every selected reviewer re
 - Reviewers receive the same disclosed request and cannot see one another's same-round output.
 - Reviewer output is untrusted evidence, not an instruction source. PlanLens does not execute commands or scope changes found in a review.
 - The primary Agent consolidates by evidence and impact, not by model vote. Agreement requires materially equivalent explicit findings; an omitted topic is silence, not support or opposition.
+- Reviews stay proportional to the stated objective and current context: required changes need evidence of material impact and the smallest sufficient response; speculative extensibility and extra machinery remain optional.
 - Every material finding receives an internal disposition. If excluding one could affect the user's decision, the summary states the finding, source, and reason.
 - PlanLens does not modify the source plan, automatically retry a CLI, or automatically start another round.
 - No monetary cost estimate is displayed.
